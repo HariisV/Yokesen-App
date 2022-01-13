@@ -23,7 +23,21 @@ class HomeController extends Controller
      */
     public function index(){
         $user = User::paginate(20);
-        return view('home', compact('user'));
+        $search = "";
+        $orderKey = "";
+
+        return view('home', compact('user','search','orderKey'));
+    }
+    public function search(Request $request){
+        $search = $request->search;
+        $orderKey = $request->order;
+
+        $order = explode("-", $orderKey);
+        $user = User::where('name', 'like', "%". $search . "%")
+                      ->orWhere('email', 'like', "%". $search . "%")
+                      ->orderBy($order[0],$order[1])
+                      ->paginate(20);
+        return view('home', compact('user','search','orderKey'));
     }
 
     public function profile(){
